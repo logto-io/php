@@ -1,0 +1,23 @@
+{
+    "name": "logto/sdk",
+    "description": "Logto PHP SDK.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Logto\\Sdk\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Gao Sun",
+            "email": "gao@silverhand.io"
+        }
+    ],
+    "require": {
+        "firebase/php-jwt": "^6.8",
+        "guzzlehttp/guzzle": "^7.7",
+        "phpfastcache/phpfastcache": "^9.1",
+        "vlucas/phpdotenv": "^5.5"
+    }
+}
