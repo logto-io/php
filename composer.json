@@ -19,5 +19,8 @@
         "guzzlehttp/guzzle": "^7.7",
         "phpfastcache/phpfastcache": "^9.1",
         "vlucas/phpdotenv": "^5.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10"
     }
 }
