@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 namespace Logto\Sdk\Oidc;
 
-class TokenResponse
+use Logto\Sdk\Models\JsonModel;
+
+class TokenResponse extends JsonModel
 {
-  public $extra;
   public function __construct(
     public string $access_token,
     public string $token_type,

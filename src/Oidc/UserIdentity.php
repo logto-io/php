@@ -1,9 +1,10 @@
 <?php declare(strict_types=1);
 namespace Logto\Sdk\Oidc;
 
-class UserIdentity
+use Logto\Sdk\Models\JsonModel;
+
+class UserIdentity extends JsonModel
 {
-  public $extra;
   public function __construct(
     public string $userId,
     public ?array $details = null,

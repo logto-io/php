@@ -1,10 +1,8 @@
 <?php declare(strict_types=1);
 namespace Logto\Sdk\Models;
 
-class IdTokenClaims
+class IdTokenClaims extends JsonModel
 {
-  public $extra;
-
   public function __construct(
     public string $iss,
     public string $sub,

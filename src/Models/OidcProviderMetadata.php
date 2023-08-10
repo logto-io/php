@@ -1,10 +1,8 @@
 <?php declare(strict_types=1);
 namespace Logto\Sdk\Models;
 
-class OidcProviderMetadata
+class OidcProviderMetadata extends JsonModel
 {
-  public $extra;
-
   public function __construct(
     public string $issuer,
     public string $authorization_endpoint,

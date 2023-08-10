@@ -55,11 +55,11 @@ class OidcCore
 
   protected CachedKeySet $jwkSet;
 
-  public function __construct(public OidcProviderMetadata $metadata)
+  public function __construct(public OidcProviderMetadata $metadata, protected Client $client = new Client())
   {
     $this->jwkSet = new CachedKeySet(
       $this->metadata->jwks_uri,
-      new Client(),
+      $client,
       new HttpFactory(),
       CacheManager::getInstance('files'),
       300,
@@ -87,8 +87,7 @@ class OidcCore
 
   public function fetchTokenByCode(string $clientId, ?string $clientSecret, string $redirectUri, string $code, string $codeVerifier): TokenResponse
   {
-    $client = new Client();
-    $response = $client->post($this->metadata->token_endpoint, [
+    $response = $this->client->post($this->metadata->token_endpoint, [
       'form_params' => [
         'grant_type' => 'authorization_code',
         'client_id' => $clientId,
@@ -104,8 +103,7 @@ class OidcCore
   /** Fetch the token for the given resource from the token endpoint using the refresh token. */
   public function fetchTokenByRefreshToken(string $clientId, ?string $clientSecret, string $refreshToken, string $resource = ''): TokenResponse
   {
-    $client = new Client();
-    $response = $client->post($this->metadata->token_endpoint, [
+    $response = $this->client->post($this->metadata->token_endpoint, [
       'form_params' => [
         'grant_type' => 'refresh_token',
         'client_id' => $clientId,
@@ -121,8 +119,7 @@ class OidcCore
   public function fetchUserInfo(string $accessToken): UserInfoResponse
   {
     $userInfoEndpoint = $this->metadata->userinfo_endpoint;
-    $client = new Client();
-    $response = $client->get($userInfoEndpoint, [
+    $response = $this->client->get($userInfoEndpoint, [
       'headers' => [
         'Authorization' => "Bearer $accessToken",
       ]
