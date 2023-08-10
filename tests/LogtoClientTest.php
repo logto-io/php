@@ -7,7 +7,7 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use Logto\Sdk\LogtoClient;
-use Logto\Sdk\ClientConfig;
+use Logto\Sdk\LogtoConfig;
 use Logto\Sdk\Oidc\OidcCore;
 use Logto\Sdk\InteractionMode;
 use Logto\Sdk\Storage\Storage;
@@ -57,7 +57,7 @@ class FakeOidcCore extends MockOidcCore
 class MockLogtoClient extends LogtoClient
 {
   public Storage $storage;
-  function __construct(public ClientConfig $config, array ...$responses)
+  function __construct(public LogtoConfig $config, array ...$responses)
   {
     $this->storage = new MemoryStorage();
     $this->oidcCore = new FakeOidcCore(
@@ -72,7 +72,7 @@ class MockLogtoClient extends LogtoClient
 
 final class LogtoClientTest extends TestCase
 {
-  protected function getInstance(ClientConfig $config = new ClientConfig(endpoint: "http://localhost:3001", appId: "app-id"), array ...$responses)
+  protected function getInstance(LogtoConfig $config = new LogtoConfig(endpoint: "http://localhost:3001", appId: "app-id"), array ...$responses)
   {
     return new MockLogtoClient($config, ...array_values($responses));
   }
@@ -88,7 +88,7 @@ final class LogtoClientTest extends TestCase
 
   function test_signIn_multipleResources()
   {
-    $client = $this->getInstance(new ClientConfig(endpoint: "http://localhost:3001", appId: "app-id", resources: ["https://resource1", "https://resource2"]));
+    $client = $this->getInstance(new LogtoConfig(endpoint: "http://localhost:3001", appId: "app-id", resources: ["https://resource1", "https://resource2"]));
     $this->assertSame(
       $client->signIn("redirectUri", InteractionMode::signUp),
       "https://logto.app/oidc/auth?client_id=app-id&redirect_uri=redirectUri&response_type=code&scope=openid+offline_access+profile&prompt=consent&code_challenge=codeChallenge&code_challenge_method=S256&state=state&interaction_mode=signUp&resource=https%3A%2F%2Fresource1&resource=https%3A%2F%2Fresource2"
@@ -97,7 +97,7 @@ final class LogtoClientTest extends TestCase
 
   function test_signIn_multipleScopes()
   {
-    $client = $this->getInstance(new ClientConfig(endpoint: "http://localhost:3001", appId: "app-id", scopes: ["email", "phone"]));
+    $client = $this->getInstance(new LogtoConfig(endpoint: "http://localhost:3001", appId: "app-id", scopes: ["email", "phone"]));
     $this->assertSame(
       $client->signIn("redirectUri"),
       "https://logto.app/oidc/auth?client_id=app-id&redirect_uri=redirectUri&response_type=code&scope=email+phone+openid+offline_access+profile&prompt=consent&code_challenge=codeChallenge&code_challenge_method=S256&state=state"
@@ -106,7 +106,7 @@ final class LogtoClientTest extends TestCase
 
   function test_signIn_allConfigs()
   {
-    $client = $this->getInstance(new ClientConfig(endpoint: "http://localhost:3001", appId: "app-id", scopes: ["email", "phone"], resources: ["https://resource1", "https://resource2"], prompt: Prompt::login));
+    $client = $this->getInstance(new LogtoConfig(endpoint: "http://localhost:3001", appId: "app-id", scopes: ["email", "phone"], resources: ["https://resource1", "https://resource2"], prompt: Prompt::login));
     $this->assertSame(
       $client->signIn("redirectUri", InteractionMode::signUp),
       "https://logto.app/oidc/auth?client_id=app-id&redirect_uri=redirectUri&response_type=code&scope=email+phone+openid+offline_access+profile&prompt=login&code_challenge=codeChallenge&code_challenge_method=S256&state=state&interaction_mode=signUp&resource=https%3A%2F%2Fresource1&resource=https%3A%2F%2Fresource2"

@@ -7,7 +7,7 @@ enum Prompt: string
   case login = 'login';
 }
 
-class ClientConfig
+class LogtoConfig
 {
   /**
    * @param string $endpoint The endpoint for the Logto server. See {@link LogtoConfig::$endpoint} for details.

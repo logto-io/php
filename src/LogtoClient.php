@@ -39,7 +39,7 @@ class LogtoClient
 {
   protected OidcCore $oidcCore;
 
-  function __construct(public ClientConfig $config, public Storage $storage = new SessionStorage())
+  function __construct(public LogtoConfig $config, public Storage $storage = new SessionStorage())
   {
     $this->oidcCore = OidcCore::create($config->endpoint);
   }
