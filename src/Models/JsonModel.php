@@ -3,7 +3,7 @@ namespace Logto\Sdk\Models;
 
 class JsonModel implements \JsonSerializable
 {
-  public array|null $extra;
+  public ?array $extra;
   public function jsonSerialize(): array
   {
     $data = [];

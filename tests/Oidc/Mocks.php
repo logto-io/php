@@ -8,6 +8,21 @@ use Firebase\JWT\JWK;
 
 class MockOidcCore extends OidcCore
 {
+  static function generateState(): string
+  {
+    return 'state';
+  }
+
+  static function generateCodeVerifier(): string
+  {
+    return 'codeVerifier';
+  }
+
+  static function generateCodeChallenge(string $codeVerifier): string
+  {
+    return 'codeChallenge';
+  }
+
   // Promote visibility for testing
   public CachedKeySet $jwkSet;
 }
@@ -44,6 +59,7 @@ class Mocks
       token_endpoint: "https://logto.app/oidc/auth/token",
       userinfo_endpoint: "https://logto.app/oidc/userinfo",
       jwks_uri: "https://logto.app/oidc/jwks",
+      end_session_endpoint: "https://logto.app/oidc/logout",
       response_types_supported: [],
       subject_types_supported: [],
       id_token_signing_alg_values_supported: [],

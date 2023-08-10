@@ -9,6 +9,7 @@ use GuzzleHttp\Psr7\Response;
 use Logto\Sdk\Oidc\TokenResponse;
 use GuzzleHttp\Client;
 use Logto\Sdk\LogtoException;
+use Logto\Sdk\Oidc\UserInfoResponse;
 
 final class OidcCoreTest extends TestCase
 {
@@ -112,5 +113,21 @@ final class OidcCoreTest extends TestCase
     $this->expectException(LogtoException::class);
     $this->expectExceptionMessage('Invalid ID token: aud is not foo1.');
     $client->verifyIdToken(MockKeySet::$signedIdToken, "foo1");
+  }
+
+  function test_fetchUserInfo()
+  {
+    $client = $this->getInstance(Mocks::mockResponse(["sub" => "1234567890", "name" => "John Doe"]));
+    $result = $client->fetchUserInfo("token");
+    $this->assertEquals($result, new UserInfoResponse("1234567890", "John Doe"));
+  }
+
+  function test_fetchUserInfo_failure()
+  {
+    $client = $this->getInstance(Mocks::mockResponse(["error" => "invalid_target"], 400));
+
+    // Unable to construct response
+    $this->expectException(ArgumentCountError::class);
+    $client->fetchUserInfo("token");
   }
 }

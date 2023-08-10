@@ -12,9 +12,9 @@ class ClientConfig
   /**
    * @param string $endpoint The endpoint for the Logto server. See {@link LogtoConfig::$endpoint} for details.
    * @param string $appId The client ID of your application. See {@link LogtoConfig::$appId} for details.
-   * @param string|null $appSecret The client secret of your application. See {@link LogtoConfig::$appSecret} for details.
-   * @param array|null $scopes The scopes (permissions) that your application needs to access. See {@link LogtoConfig::$scopes} for details.
-   * @param array|null $resources The API resources that your application needs to access. See {@link LogtoConfig::$resources} for details.
+   * @param ?string $appSecret The client secret of your application. See {@link LogtoConfig::$appSecret} for details.
+   * @param ?array $scopes The scopes (permissions) that your application needs to access. See {@link LogtoConfig::$scopes} for details.
+   * @param ?array $resources The API resources that your application needs to access. See {@link LogtoConfig::$resources} for details.
    * @param Prompt $prompt The prompt parameter for the OpenID Connect authorization request. See {@link LogtoConfig::$prompt} for details.
    */
   public function __construct(
