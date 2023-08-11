@@ -6,12 +6,12 @@
 
 <body>
   <?php
-  require 'vendor/autoload.php';
+  require __DIR__ . '/../vendor/autoload.php';
 
   use Logto\Sdk\LogtoClient;
   use Logto\Sdk\LogtoConfig;
 
-  $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+  $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
   $dotenv->load();
 
   $resources = ['https://default.logto.app/api', 'https://shopping.api'];
