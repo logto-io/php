@@ -1,18 +1,13 @@
-***
+---
 
 # IdTokenClaims
 
 The ID token claims object.
 
-
-
-* Full name: `\Logto\Sdk\Models\IdTokenClaims`
-* Parent class: [`\Logto\Sdk\Models\JsonModel`](./JsonModel.md)
-
-
+- Full name: `\Logto\Sdk\Models\IdTokenClaims`
+- Parent class: [`\Logto\Sdk\Models\JsonModel`](./JsonModel.md)
 
 ## Properties
-
 
 ### iss
 
@@ -22,12 +17,7 @@ The issuer identifier for whom issued the token.
 public string $iss
 ```
 
-
-
-
-
-
-***
+---
 
 ### sub
 
@@ -37,12 +27,7 @@ The subject identifier for whom the token is intended (user ID).
 public string $sub
 ```
 
-
-
-
-
-
-***
+---
 
 ### aud
 
@@ -52,12 +37,7 @@ The audience that the token is intended for, which is the client ID.
 public string $aud
 ```
 
-
-
-
-
-
-***
+---
 
 ### exp
 
@@ -67,12 +47,7 @@ The expiration time of the token (in seconds).
 public int $exp
 ```
 
-
-
-
-
-
-***
+---
 
 ### iat
 
@@ -82,27 +57,15 @@ The time at which the token was issued (in seconds).
 public int $iat
 ```
 
-
-
-
-
-
-***
+---
 
 ### at_hash
-
-
 
 ```php
 public ?string $at_hash
 ```
 
-
-
-
-
-
-***
+---
 
 ### name
 
@@ -112,12 +75,7 @@ The user's full name.
 public ?string $name
 ```
 
-
-
-
-
-
-***
+---
 
 ### username
 
@@ -127,12 +85,7 @@ The user's username.
 public ?string $username
 ```
 
-
-
-
-
-
-***
+---
 
 ### picture
 
@@ -142,12 +95,7 @@ The user's profile picture URL.
 public ?string $picture
 ```
 
-
-
-
-
-
-***
+---
 
 ### email
 
@@ -157,12 +105,7 @@ The user's email address.
 public ?string $email
 ```
 
-
-
-
-
-
-***
+---
 
 ### email_verified
 
@@ -172,12 +115,7 @@ Whether the email address is verified.
 public ?bool $email_verified
 ```
 
-
-
-
-
-
-***
+---
 
 ### phone_number
 
@@ -187,12 +125,7 @@ The user's phone number.
 public ?string $phone_number
 ```
 
-
-
-
-
-
-***
+---
 
 ### phone_number_verified
 
@@ -202,79 +135,47 @@ Whether the phone number is verified.
 public ?bool $phone_number_verified
 ```
 
-
-
-
-
-
-***
+---
 
 ## Methods
 
-
-### __construct
-
-
+### \_\_construct
 
 ```php
 public __construct(string $iss, string $sub, string $aud, int $exp, int $iat, ?string $at_hash = null, ?string $name = null, ?string $username = null, ?string $picture = null, ?string $email = null, ?bool $email_verified = null, ?string $phone_number = null, ?bool $phone_number_verified = null, mixed $extra): mixed
 ```
 
-
-
-
-
-
-
-
 **Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$iss` | **string** |  |
-| `$sub` | **string** |  |
-| `$aud` | **string** |  |
-| `$exp` | **int** |  |
-| `$iat` | **int** |  |
-| `$at_hash` | **?string** |  |
-| `$name` | **?string** |  |
-| `$username` | **?string** |  |
-| `$picture` | **?string** |  |
-| `$email` | **?string** |  |
-| `$email_verified` | **?bool** |  |
-| `$phone_number` | **?string** |  |
-| `$phone_number_verified` | **?bool** |  |
-| `$extra` | **mixed** |  |
+| Parameter                | Type        | Description |
+| ------------------------ | ----------- | ----------- |
+| `$iss`                   | **string**  |             |
+| `$sub`                   | **string**  |             |
+| `$aud`                   | **string**  |             |
+| `$exp`                   | **int**     |             |
+| `$iat`                   | **int**     |             |
+| `$at_hash`               | **?string** |             |
+| `$name`                  | **?string** |             |
+| `$username`              | **?string** |             |
+| `$picture`               | **?string** |             |
+| `$email`                 | **?string** |             |
+| `$email_verified`        | **?bool**   |             |
+| `$phone_number`          | **?string** |             |
+| `$phone_number_verified` | **?bool**   |             |
+| `$extra`                 | **mixed**   |             |
 
-
-
-
-***
-
+---
 
 ## Inherited methods
 
-
 ### jsonSerialize
-
-
 
 ```php
 public jsonSerialize(): array
 ```
 
+---
 
+---
 
-
-
-
-
-
-
-
-
-***
-
-
-***
 > Automatically generated from source code comments on 2023-08-11 using [phpDocumentor](http://www.phpdoc.org/) and [saggre/phpdocumentor-markdown](https://github.com/Saggre/phpDocumentor-markdown)

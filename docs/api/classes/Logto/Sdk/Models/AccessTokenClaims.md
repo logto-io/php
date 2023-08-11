@@ -1,18 +1,13 @@
-***
+---
 
 # AccessTokenClaims
 
 The access token claims object.
 
-
-
-* Full name: `\Logto\Sdk\Models\AccessTokenClaims`
-* Parent class: [`\Logto\Sdk\Models\JsonModel`](./JsonModel.md)
-
-
+- Full name: `\Logto\Sdk\Models\AccessTokenClaims`
+- Parent class: [`\Logto\Sdk\Models\JsonModel`](./JsonModel.md)
 
 ## Properties
-
 
 ### iss
 
@@ -22,12 +17,7 @@ The issuer identifier for whom issued the token.
 public string $iss
 ```
 
-
-
-
-
-
-***
+---
 
 ### sub
 
@@ -37,12 +27,7 @@ The subject identifier for whom the token is intended (user ID).
 public string $sub
 ```
 
-
-
-
-
-
-***
+---
 
 ### aud
 
@@ -53,12 +38,7 @@ indicator.
 public string $aud
 ```
 
-
-
-
-
-
-***
+---
 
 ### exp
 
@@ -68,12 +48,7 @@ The expiration time of the token (in seconds).
 public int $exp
 ```
 
-
-
-
-
-
-***
+---
 
 ### iat
 
@@ -83,12 +58,7 @@ The time at which the token was issued (in seconds).
 public int $iat
 ```
 
-
-
-
-
-
-***
+---
 
 ### scope
 
@@ -98,12 +68,7 @@ The scopes that the token is granted for.
 public string $scope
 ```
 
-
-
-
-
-
-***
+---
 
 ### client_id
 
@@ -114,73 +79,41 @@ included in the `aud` claim.
 public ?string $client_id
 ```
 
-
-
-
-
-
-***
+---
 
 ## Methods
 
-
-### __construct
-
-
+### \_\_construct
 
 ```php
 public __construct(string $iss, string $sub, string $aud, int $exp, int $iat, string $scope, ?string $client_id = null, mixed $extra): mixed
 ```
 
-
-
-
-
-
-
-
 **Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$iss` | **string** |  |
-| `$sub` | **string** |  |
-| `$aud` | **string** |  |
-| `$exp` | **int** |  |
-| `$iat` | **int** |  |
-| `$scope` | **string** |  |
-| `$client_id` | **?string** |  |
-| `$extra` | **mixed** |  |
+| Parameter    | Type        | Description |
+| ------------ | ----------- | ----------- |
+| `$iss`       | **string**  |             |
+| `$sub`       | **string**  |             |
+| `$aud`       | **string**  |             |
+| `$exp`       | **int**     |             |
+| `$iat`       | **int**     |             |
+| `$scope`     | **string**  |             |
+| `$client_id` | **?string** |             |
+| `$extra`     | **mixed**   |             |
 
-
-
-
-***
-
+---
 
 ## Inherited methods
 
-
 ### jsonSerialize
-
-
 
 ```php
 public jsonSerialize(): array
 ```
 
+---
 
+---
 
-
-
-
-
-
-
-
-
-***
-
-
-***
 > Automatically generated from source code comments on 2023-08-11 using [phpDocumentor](http://www.phpdoc.org/) and [saggre/phpdocumentor-markdown](https://github.com/Saggre/phpDocumentor-markdown)

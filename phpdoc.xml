@@ -2,7 +2,7 @@
 <phpdocumentor configVersion="3.0">
   <title>Logto PHP SDK</title>
   <paths>
-    <output>docs</output>
+    <output>docs/api</output>
   </paths>
   <version number="latest">
     <api format="php">

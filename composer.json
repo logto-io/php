@@ -8,6 +8,10 @@
             "Logto\\Sdk\\": "src/"
         }
     },
+    "scripts": {
+        "test": "phpunit tests",
+        "docs": "rm -rf docs/api && php phpDocumentor.phar && prettier --write docs/api"
+    },
     "authors": [
         {
             "name": "Silverhand Inc.",

@@ -1,4 +1,4 @@
-***
+---
 
 # SignInSession
 
@@ -6,12 +6,9 @@ The sign-in session that stores the information for the sign-in callback.
 
 Should be stored before redirecting the user to Logto.
 
-* Full name: `\Logto\Sdk\SignInSession`
-
-
+- Full name: `\Logto\Sdk\SignInSession`
 
 ## Properties
-
 
 ### redirectUri
 
@@ -21,12 +18,7 @@ The redirect URI for the current sign-in session.
 public string $redirectUri
 ```
 
-
-
-
-
-
-***
+---
 
 ### codeVerifier
 
@@ -36,12 +28,7 @@ The code verifier of Proof Key for Code Exchange (PKCE).
 public string $codeVerifier
 ```
 
-
-
-
-
-
-***
+---
 
 ### state
 
@@ -51,44 +38,26 @@ The state for OAuth 2.0 authorization request.
 public string $state
 ```
 
-
-
-
-
-
-***
+---
 
 ## Methods
 
-
-### __construct
-
-
+### \_\_construct
 
 ```php
 public __construct(string $redirectUri, string $codeVerifier, string $state): mixed
 ```
 
-
-
-
-
-
-
-
 **Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `$redirectUri` | **string** |  |
-| `$codeVerifier` | **string** |  |
-| `$state` | **string** |  |
+| Parameter       | Type       | Description |
+| --------------- | ---------- | ----------- |
+| `$redirectUri`  | **string** |             |
+| `$codeVerifier` | **string** |             |
+| `$state`        | **string** |             |
 
+---
 
+---
 
-
-***
-
-
-***
 > Automatically generated from source code comments on 2023-08-11 using [phpDocumentor](http://www.phpdoc.org/) and [saggre/phpdocumentor-markdown](https://github.com/Saggre/phpDocumentor-markdown)
