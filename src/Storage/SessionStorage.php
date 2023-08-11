@@ -1,6 +1,9 @@
 <?php declare(strict_types=1);
 namespace Logto\Sdk\Storage;
 
+/**
+ * The storage implementation using PHP session.
+ */
 class SessionStorage implements Storage
 {
   public function __construct()

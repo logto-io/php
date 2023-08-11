@@ -1,6 +1,11 @@
 <?php declare(strict_types=1);
 namespace Logto\Sdk\Models;
 
+/**
+ * The OpenID Connect Discovery response object.
+ * 
+ * @see [OpenID Provider Metadata](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata) to learn more.
+ */
 class OidcProviderMetadata extends JsonModel
 {
   public function __construct(

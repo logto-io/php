@@ -10,10 +10,20 @@ use Logto\Sdk\Utilities;
 use Phpfastcache\CacheManager;
 use Firebase\JWT\JWT;
 
+/**
+ * The core OIDC functions for the Logto client. Provider-agonistic functions
+ * are implemented as static methods, while other functions are implemented as
+ * instance methods.
+ */
 class OidcCore
 {
   public const DEFAULT_SCOPES = ['openid', 'offline_access', 'profile'];
 
+  /**
+   * Create a OidcCore instance for the given Logto endpoint using the discovery URL.
+   * Note it may take a few time to fetch the provider metadata since it will send a
+   * network request.
+   */
   static function create(string $logtoEndpoint): OidcCore
   {
     $client = new Client();
@@ -34,7 +44,7 @@ class OidcCore
   /**
    * Generate a random code verifier string (32 bytes) for PKCE.
    * 
-   * See {@link https://www.rfc-editor.org/rfc/rfc7636.html#section-4.1 Client Creates a Code Verifier} to learn more.
+   * See [Client Creates a Code Verifier](https://www.rfc-editor.org/rfc/rfc7636.html#section-4.1) to learn more.
    */
   static function generateCodeVerifier(): string
   {
@@ -44,7 +54,7 @@ class OidcCore
   /**
    * Generate a code challenge string for the given code verifier string.
    * 
-   * See {@link https://www.rfc-editor.org/rfc/rfc7636.html#section-4.2 Client Creates the Code Challenge} to learn more.
+   * See [Client Creates the Code Challenge](https://www.rfc-editor.org/rfc/rfc7636.html#section-4.2) to learn more.
    */
   static function generateCodeChallenge(string $codeVerifier): string
   {
@@ -55,6 +65,12 @@ class OidcCore
 
   protected CachedKeySet $jwkSet;
 
+  /**
+   * Initialize the OIDC core with the provider metadata. You can use the
+   * static create method to create an instance for the given Logto endpoint.
+   * 
+   * @see OidcCore::create()
+   */
   public function __construct(public OidcProviderMetadata $metadata, protected Client $client = new Client())
   {
     $this->jwkSet = new CachedKeySet(
@@ -67,6 +83,10 @@ class OidcCore
     );
   }
 
+  /**
+   * Verify the ID Token signature and its issuer and client ID, throw an exception
+   * if the verification fails.
+   */
   public function verifyIdToken(string $idToken, string $clientId)
   {
     $assertions = [
@@ -85,6 +105,7 @@ class OidcCore
     }
   }
 
+  /** Fetch the token from the token endpoint using the authorization code. */
   public function fetchTokenByCode(string $clientId, ?string $clientSecret, string $redirectUri, string $code, string $codeVerifier): TokenResponse
   {
     $response = $this->client->post($this->metadata->token_endpoint, [
@@ -115,7 +136,11 @@ class OidcCore
     return new TokenResponse(...json_decode($response, true));
   }
 
-  /** Fetch the user info from the OpenID Connect UserInfo endpoint. */
+  /** 
+   * Fetch the user info from the OpenID Connect UserInfo endpoint. 
+   * 
+   * @see [UserInfo Endpoint](https://openid.net/specs/openid-connect-core-1_0.html#UserInfo]
+   */
   public function fetchUserInfo(string $accessToken): UserInfoResponse
   {
     $userInfoEndpoint = $this->metadata->userinfo_endpoint;

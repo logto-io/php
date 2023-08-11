@@ -21,3 +21,6 @@ cache
 .history
 .vercel
 .coverage
+.phpdoc
+# Using phpDocumentor locally
+phpDocumentor.phar

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdocumentor configVersion="3.0">
+  <title>Logto PHP SDK</title>
+  <paths>
+    <output>docs</output>
+  </paths>
+  <version number="latest">
+    <api format="php">
+      <source dsn=".">
+          <path>src</path>
+      </source>
+    </api>
+  </version>
+  <template name="vendor/saggre/phpdocumentor-markdown/themes/markdown" />
+</phpdocumentor>

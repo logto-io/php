@@ -8,15 +8,15 @@
   <?php
   require 'vendor/autoload.php';
 
-  use Logto\Sdk\ClientConfig;
   use Logto\Sdk\LogtoClient;
+  use Logto\Sdk\LogtoConfig;
 
   $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
   $dotenv->load();
 
   $resources = ['https://default.logto.app/api', 'https://shopping.api'];
   $client = new LogtoClient(
-    new ClientConfig(
+    new LogtoConfig(
       endpoint: "http://localhost:3001",
       appId: $_ENV['LOGTO_APP_ID'],
       appSecret: $_ENV['LOGTO_APP_SECRET'],

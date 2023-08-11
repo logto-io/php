@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 namespace Logto\Sdk\Storage;
 
+/** The keys enum for the persistent storage. */
 enum StorageKey: string
 {
   case idToken = 'logto::id_token';

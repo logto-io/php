@@ -10,31 +10,53 @@ use Logto\Sdk\Storage\SessionStorage;
 use Logto\Sdk\Storage\Storage;
 use Logto\Sdk\Storage\StorageKey;
 
+/**
+ * The sign-in session that stores the information for the sign-in callback.
+ * Should be stored before redirecting the user to Logto.
+ */
 class SignInSession
 {
   function __construct(
+    /** The redirect URI for the current sign-in session. */
     public string $redirectUri,
+    /** The code verifier of Proof Key for Code Exchange (PKCE). */
     public string $codeVerifier,
+    /** The state for OAuth 2.0 authorization request. */
     public string $state,
   ) {
   }
 }
 
+/** The access token class for a resource. */
 class AccessToken
 {
   function __construct(
+    /** The access token string. */
     public string $token,
+    /**
+     * The timestamp (in seconds) when the access token will expire.
+     * Note this is not the expiration time of the access token itself, but the
+     * expiration time of the access token cache.
+     */
     public int $expiresAt,
   ) {
   }
 }
 
+/**
+ * The interaction mode for the sign-in request. Note this is not a part of the OIDC
+ * specification, but a Logto extension.
+ */
 enum InteractionMode: string
 {
   case signUp = 'signUp';
   case signIn = 'signIn';
 }
 
+/**
+ * The main class of the Logto client. You should create an instance of this class
+ * and use it to sign in, sign out, get access token, etc.
+ */
 class LogtoClient
 {
   protected OidcCore $oidcCore;
@@ -44,21 +66,37 @@ class LogtoClient
     $this->oidcCore = OidcCore::create($config->endpoint);
   }
 
+  /**
+   * Check if the user is authenticated by checking if the ID Token exists.
+   */
   function isAuthenticated(): bool
   {
     return boolval($this->storage->get(StorageKey::idToken));
   }
 
+  /**
+   * Get the ID Token string. If you need to get the claims in the ID Token, use
+   * `getIdTokenClaims` instead.
+   */
   function getIdToken(): ?string
   {
     return $this->storage->get(StorageKey::idToken);
   }
 
+  /**
+   * Get the claims in the ID Token. If the ID Token does not exist, an exception
+   * will be thrown.
+   */
   function getIdTokenClaims(): IdTokenClaims
   {
     return new IdTokenClaims(...json_decode(base64_decode(explode('.', $this->getIdToken())[1]), true));
   }
 
+  /**
+   * Get the access token for the given resource. If the access token is expired,
+   * it will be refreshed automatically. If no refresh token is found, null will
+   * be returned.
+   */
   function getAccessToken(string $resource = ''): ?string
   {
     $accessToken = $this->_getAccessToken($resource);
@@ -84,16 +122,37 @@ class LogtoClient
     return $tokenResponse->access_token;
   }
 
+  /**
+   * Get the claims in the access token for the given resource. If the access token
+   * is expired, it will be refreshed automatically. If it's unable to refresh the
+   * access token, an exception will be thrown.
+   */
   function getAccessTokenClaims(string $resource = ''): AccessTokenClaims
   {
     return new AccessTokenClaims(...json_decode(base64_decode(explode('.', $this->getAccessToken($resource))[1]), true));
   }
 
+  /**
+   * Get the refresh token string.
+   */
   function getRefreshToken(): ?string
   {
     return $this->storage->get(StorageKey::refreshToken);
   }
 
+  /**
+   * Returns the sign-in URL for the given redirect URI. You should redirect the user
+   * to the returned URL to sign in.
+   *
+   * By specifying the interaction mode, you can control whether the user will be
+   * prompted for sign-in or sign-up on the first screen. If the interaction mode is
+   * not specified, the default one will be used.
+   *
+   * @example
+   * ```php
+   * header('Location: ' . $client->signIn("https://example.com/callback"));
+   * ```
+   */
   function signIn(string $redirectUri, ?InteractionMode $interactionMode = null): string
   {
     $codeVerifier = $this->oidcCore::generateCodeVerifier();
@@ -116,6 +175,23 @@ class LogtoClient
     return $signInUrl;
   }
 
+  /**
+   * Returns the sign-out URL for the given post-logout redirect URI. You should
+   * redirect the user to the returned URL to sign out.
+   *
+   * If the post-logout redirect URI is not provided, the Logto default post-logout
+   * redirect URI will be used.
+   *
+   * Note:
+   *   If the OpenID Connect server does not support the end session endpoint
+   *   (i.e. OpenID Connect RP-Initiated Logout), the function will throw an
+   *   exception. Logto supports the end session endpoint.
+   *
+   * Example:
+   * ```php
+   * header('Location: ' . $client->signIn("https://example.com/"));
+   * ```
+   */
   function signOut(?string $postLogoutRedirectUri = null): string
   {
     $this->storage->delete(StorageKey::idToken);
@@ -136,6 +212,10 @@ class LogtoClient
     return $end_session_endpoint . '?' . $query;
   }
 
+  /**
+   * Handle the sign-in callback from the Logto server. This method should be called
+   * in the callback route handler of your application.
+   */
   public function handleSignInCallback(): void
   {
     $signInSession = $this->getSignInSession();
@@ -179,6 +259,10 @@ class LogtoClient
     $this->storage->delete(StorageKey::signInSession);
   }
 
+  /**
+   * Fetch the user information from the UserInfo endpoint. If the access token
+   * is expired, it will be refreshed automatically.
+   */
   public function fetchUserInfo(): UserInfoResponse
   {
     $accessToken = $this->getAccessToken();
