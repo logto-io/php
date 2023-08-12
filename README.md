@@ -22,7 +22,7 @@ See [tutorial](./docs/tutorial.md) for a quick start.
 
 ## API reference
 
-See [API reference](./docs/api.md) for more details.
+See [API reference](./docs/api/index.md) for more details.
 
 ## Sample code
 
