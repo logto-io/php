@@ -38,7 +38,7 @@ class OidcCore
   /** Generate a random string (32 bytes) for the state parameter. */
   static function generateState(): string
   {
-    return Utilities::urlSafeEncode(random_bytes(32));
+    return JWT::urlsafeB64Encode(random_bytes(32));
   }
 
   /**
@@ -48,7 +48,7 @@ class OidcCore
    */
   static function generateCodeVerifier(): string
   {
-    return Utilities::urlSafeEncode(random_bytes(32));
+    return JWT::urlsafeB64Encode(random_bytes(32));
   }
 
   /**
@@ -58,7 +58,7 @@ class OidcCore
    */
   static function generateCodeChallenge(string $codeVerifier): string
   {
-    return Utilities::urlSafeEncode(hash('sha256', $codeVerifier, true));
+    return JWT::urlsafeB64Encode(hash('sha256', $codeVerifier, true));
   }
 
   // ==================== End of static members ====================
