@@ -1,7 +1,5 @@
 # Logto PHP SDK
 
-Still work in progress.
-
 ## Prerequisites
 
 - PHP 8.1 or higher
