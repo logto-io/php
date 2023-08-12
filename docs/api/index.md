@@ -15,7 +15,6 @@ This is an automatically generated documentation for **Logto PHP SDK**.
 | [`LogtoConfig`](./classes/Logto/Sdk/LogtoConfig.md)       | The configuration object for the Logto client.                                                                                               |
 | [`LogtoException`](./classes/Logto/Sdk/LogtoException.md) | The exception class to identify the exceptions from the Logto client.                                                                        |
 | [`SignInSession`](./classes/Logto/Sdk/SignInSession.md)   | The sign-in session that stores the information for the sign-in callback.                                                                    |
-| [`Utilities`](./classes/Logto/Sdk/Utilities.md)           |                                                                                                                                              |
 
 ### \Logto\Sdk\Models
 
@@ -55,4 +54,4 @@ This is an automatically generated documentation for **Logto PHP SDK**.
 
 ---
 
-> Automatically generated from source code comments on 2023-08-11 using [phpDocumentor](http://www.phpdoc.org/) and [saggre/phpdocumentor-markdown](https://github.com/Saggre/phpDocumentor-markdown)
+> Automatically generated from source code comments using [phpDocumentor](http://www.phpdoc.org/) and [saggre/phpdocumentor-markdown](https://github.com/Saggre/phpDocumentor-markdown)
