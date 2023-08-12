@@ -1,5 +1,11 @@
 # Logto PHP SDK
 
+[![Logto](https://img.shields.io/badge/for-logto-7958ff)][Website]
+[![Packagist Version](https://img.shields.io/packagist/v/logto/sdk)][Packagist]
+[![Packagist PHP Version](https://img.shields.io/packagist/dependency-v/logto/sdk/php)][Packagist]
+[![Packagist License](https://img.shields.io/packagist/l/logto/sdk)](https://github.com/logto-io/php)
+[![Discord](https://img.shields.io/discord/965845662535147551?color=5865f2&logo=discord&label=discord)][Discord]
+
 ## Prerequisites
 
 - PHP 8.1 or higher
@@ -25,12 +31,6 @@ See [API reference](./docs/api/index.md) for more details.
 ## Sample code
 
 See [samples](./samples/) directory for example usages.
-
-## Resources
-
-- [Logto website](https://logto.io/)
-- [Logto documentation](https://docs.logto.io/)
-- [Join Discord](https://discord.gg/vRvwuwgpVX)
 
 ## Development scripts
 
@@ -60,3 +60,13 @@ composer docs
 ```
 
 This command will generate the API docs in `docs/api` folder and format the files.
+
+## Resources
+
+- [Logto website][Website]
+- [Logto documentation](https://docs.logto.io/)
+- [Join Discord][Discord]
+
+[Website]: https://logto.io/
+[Packagist]: https://packagist.org/packages/logto/sdk
+[Discord]: https://discord.gg/vRvwuwgpVX
