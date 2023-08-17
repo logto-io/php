@@ -116,10 +116,10 @@ Route::get('/', function () {
 
   return (
     // Get local ID token claims
-    $client->getIdTokenClaims()->modelDumpJson(excludeUnset: true)
+    json_decode($client->getIdTokenClaims())
     . "<br>"
     // Fetch user info from Logto userinfo endpoint
-    $client->fetchUserInfo()->modelDumpJson(excludeUnset: true)
+    json_decode($client->fetchUserInfo())
     . "<br><a href='/sign-out'>Sign out</a>"
   );
 });
