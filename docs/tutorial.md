@@ -7,22 +7,22 @@ This tutorial will show you how to integrate Logto into your PHP web application
 
 ## Table of contents
 
-- [Logto PHP SDK tutorial](#logto-php-sdk-tutorial)
-  - [Table of contents](#table-of-contents)
-  - [Installation](#installation)
-  - [Integration](#integration)
-    - [Init LogtoClient](#init-logtoclient)
-    - [Implement the sign-in route](#implement-the-sign-in-route)
-    - [Implement the callback route](#implement-the-callback-route)
-    - [Implement the home page](#implement-the-home-page)
-    - [Implement the sign-out route](#implement-the-sign-out-route)
-    - [Checkpoint: Test your application](#checkpoint-test-your-application)
-  - [Protect your routes](#protect-your-routes)
-  - [Scopes and claims](#scopes-and-claims)
-    - [Special ID token claims](#special-id-token-claims)
-  - [API resources](#api-resources)
-    - [Configure Logto client](#configure-logto-client)
-    - [Fetch access token for the API resource](#fetch-access-token-for-the-api-resource)
+- [Table of contents](#table-of-contents)
+- [Installation](#installation)
+- [Integration](#integration)
+  - [Init LogtoClient](#init-logtoclient)
+  - [Implement the sign-in route](#implement-the-sign-in-route)
+  - [Implement the callback route](#implement-the-callback-route)
+  - [Implement the home page](#implement-the-home-page)
+  - [Implement the sign-out route](#implement-the-sign-out-route)
+  - [Checkpoint: Test your application](#checkpoint-test-your-application)
+- [Protect your routes](#protect-your-routes)
+- [Scopes and claims](#scopes-and-claims)
+  - [Special ID token claims](#special-id-token-claims)
+- [API resources](#api-resources)
+  - [Configure Logto client](#configure-logto-client)
+  - [Fetch access token for the API resource](#fetch-access-token-for-the-api-resource)
+  - [Fetch organization token for user](#fetch-organization-token-for-user)
 
 ## Installation
 
@@ -200,7 +200,20 @@ By default, Logto SDK requests three scopes: `openid`, `profile`, and `offline_a
 $client = new LogtoClient(
   new LogtoConfig(
     // ...other configs
-    scopes: ["email", "phone"], // Add more scopes
+    scopes: ["email", "phone"], // Update per your needs
+  ),
+);
+```
+
+Alternatively, you can use the `UserScope` enum to add scopes:
+
+```php
+use Logto\Sdk\Constants\UserScope;
+
+$client = new LogtoClient(
+  new LogtoConfig(
+    // ...other configs
+    scopes: [UserScope::email, UserScope::phone], // Update per your needs
   ),
 );
 ```
@@ -280,3 +293,30 @@ $accessToken = $client->getAccessToken("https://shopping.your-app.com/api");
 This method will return a JWT access token that can be used to access the API resource, if the user has the proper permissions. If the current cached access token has expired, this method will automatically try to use the refresh token to get a new access token.
 
 If failed by any reason, this method will return `null`.
+
+### Fetch organization token for user
+
+If organization is new to you, please read [🏢 Organizations (Multi-tenancy)](https://docs.logto.io/docs/recipes/organizations/) to get started.
+
+You need to add `UserScope.organizations` scope when configuring the Logto client:
+
+```php
+use Logto\Sdk\Constants\UserScope;
+
+$client = new LogtoClient(
+  new LogtoConfig(
+    // ...other configs
+    scopes: [UserScope::organizations], // Add scopes
+  ),
+);
+```
+
+Once the user is signed in, you can fetch the organization token for the user:
+
+```php
+# Replace the parameter with a valid organization ID.
+# Valid organization IDs for the user can be found in the ID token claim `organizations`.
+$organizationToken = $client->getOrganizationToken("organization-id");
+# or
+$claims = $client->getOrganizationTokenClaims("organization-id");
+```

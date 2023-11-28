@@ -5,8 +5,9 @@ use Firebase\JWT\CachedKeySet;
 use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Client;
 use Logto\Sdk\LogtoException;
+use Logto\Sdk\Constants\ReservedScope;
+use Logto\Sdk\Constants\UserScope;
 use Logto\Sdk\Models\OidcProviderMetadata;
-use Logto\Sdk\Utilities;
 use Phpfastcache\CacheManager;
 use Firebase\JWT\JWT;
 
@@ -17,7 +18,8 @@ use Firebase\JWT\JWT;
  */
 class OidcCore
 {
-  public const DEFAULT_SCOPES = ['openid', 'offline_access', 'profile'];
+  public const DEFAULT_SCOPES = [ReservedScope::openId, ReservedScope::offlineAccess, UserScope::profile];
+  public const ORGANIZATION_URN_PREFIX = 'urn:logto:organization:';
 
   /**
    * Create a OidcCore instance for the given Logto endpoint using the discovery URL.
@@ -59,6 +61,19 @@ class OidcCore
   static function generateCodeChallenge(string $codeVerifier): string
   {
     return JWT::urlsafeB64Encode(hash('sha256', $codeVerifier, true));
+  }
+
+  /**
+   * Build the organization URN for the given organization ID.
+   * 
+   * For example, if the organization ID is `123`, the organization URN will be
+   * `urn:logto:organization:123`.
+   * 
+   * @see [RFC 0001](https://github.com/logto-io/rfcs) to learn more.
+   */
+  static function buildOrganizationUrn(string $organizationId): string
+  {
+    return self::ORGANIZATION_URN_PREFIX . $organizationId;
   }
 
   // ==================== End of static members ====================
@@ -121,16 +136,23 @@ class OidcCore
     return new TokenResponse(...json_decode($response, true));
   }
 
-  /** Fetch the token for the given resource from the token endpoint using the refresh token. */
+  /** 
+   * Fetch the token for the given resource from the token endpoint using the refresh token.
+   * 
+   * If the resource is an organization URN, the organization ID will be extracted from
+   * the URN and the `organization_id` parameter will be sent to the token endpoint.
+   */
   public function fetchTokenByRefreshToken(string $clientId, ?string $clientSecret, string $refreshToken, string $resource = ''): TokenResponse
   {
+    $isOrganizationResource = str_starts_with($resource, self::ORGANIZATION_URN_PREFIX);
     $response = $this->client->post($this->metadata->token_endpoint, [
       'form_params' => [
         'grant_type' => 'refresh_token',
         'client_id' => $clientId,
         'client_secret' => $clientSecret,
         'refresh_token' => $refreshToken,
-        'resource' => $resource ?: null,
+        'resource' => $isOrganizationResource ? null : ($resource ?: null),
+        'organization_id' => $isOrganizationResource ? substr($resource, strlen(self::ORGANIZATION_URN_PREFIX)) : null,
       ],
     ])->getBody()->getContents();
     return new TokenResponse(...json_decode($response, true));

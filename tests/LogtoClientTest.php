@@ -18,6 +18,7 @@ use Logto\Sdk\Oidc\TokenResponse;
 use Logto\Sdk\Models\AccessTokenClaims;
 use Logto\Sdk\Models\IdTokenClaims;
 use Logto\Sdk\Oidc\UserInfoResponse;
+use Logto\Sdk\Constants\UserScope;
 
 class MemoryStorage implements Storage
 {
@@ -97,7 +98,7 @@ final class LogtoClientTest extends TestCase
 
   function test_signIn_multipleScopes()
   {
-    $client = $this->getInstance(new LogtoConfig(endpoint: "http://localhost:3001", appId: "app-id", scopes: ["email", "phone"]));
+    $client = $this->getInstance(new LogtoConfig(endpoint: "http://localhost:3001", appId: "app-id", scopes: ["email", "phone", "email"]));
     $this->assertSame(
       $client->signIn("redirectUri"),
       "https://logto.app/oidc/auth?client_id=app-id&redirect_uri=redirectUri&response_type=code&scope=email+phone+openid+offline_access+profile&prompt=consent&code_challenge=codeChallenge&code_challenge_method=S256&state=state"
@@ -106,10 +107,19 @@ final class LogtoClientTest extends TestCase
 
   function test_signIn_allConfigs()
   {
-    $client = $this->getInstance(new LogtoConfig(endpoint: "http://localhost:3001", appId: "app-id", scopes: ["email", "phone"], resources: ["https://resource1", "https://resource2"], prompt: Prompt::login));
+    $client = $this->getInstance(new LogtoConfig(endpoint: "http://localhost:3001", appId: "app-id", scopes: ["email", UserScope::phone], resources: ["https://resource1", "https://resource2"], prompt: Prompt::login));
     $this->assertSame(
       $client->signIn("redirectUri", InteractionMode::signUp),
       "https://logto.app/oidc/auth?client_id=app-id&redirect_uri=redirectUri&response_type=code&scope=email+phone+openid+offline_access+profile&prompt=login&code_challenge=codeChallenge&code_challenge_method=S256&state=state&interaction_mode=signUp&resource=https%3A%2F%2Fresource1&resource=https%3A%2F%2Fresource2"
+    );
+  }
+
+  function test_signIn_organizationScope()
+  {
+    $client = $this->getInstance(new LogtoConfig(endpoint: "http://localhost:3001", appId: "app-id", scopes: ["email", UserScope::organizations]));
+    $this->assertSame(
+      $client->signIn("redirectUri"),
+      "https://logto.app/oidc/auth?client_id=app-id&redirect_uri=redirectUri&response_type=code&scope=email+urn%3Alogto%3Ascope%3Aorganizations+openid+offline_access+profile&prompt=consent&code_challenge=codeChallenge&code_challenge_method=S256&state=state&resource=urn%3Alogto%3Aresource%3Aorganizations"
     );
   }
 
@@ -244,6 +254,17 @@ final class LogtoClientTest extends TestCase
     $this->assertSame($client->getAccessToken(), "accessToken");
   }
 
+  function test_getOrganizationToken()
+  {
+    $client = $this->getInstance();
+    $this->assertNull($client->getOrganizationToken('1'));
+    $client->storage->set(
+      StorageKey::accessTokenMap,
+      '{"":{"token":"access_token","expiresAt": 9999999999}, "urn:logto:organization:1":{"token":"access_token_foo","expiresAt": 9999999999}}',
+    );
+    $this->assertSame($client->getOrganizationToken('1'), "access_token_foo");
+  }
+
   function test_getAccessTokenClaims()
   {
     $client = $this->getInstance();
@@ -260,6 +281,34 @@ final class LogtoClientTest extends TestCase
     );
     $this->assertEquals(
       $client->getAccessTokenClaims(),
+      new AccessTokenClaims(
+        iss: "https://logto.app",
+        aud: "https://logto.app/api",
+        exp: 9999999999,
+        iat: 1616446300,
+        sub: "user1",
+        scope: "admin user",
+        client_id: "saqre1oqbkpj6zhq85ho0",
+      )
+    );
+  }
+
+  function test_getOrganizationTokenClaims()
+  {
+    $client = $this->getInstance();
+
+    // Not able to parse null
+    $this->expectException(TypeError::class);
+    $this->assertNull($client->getOrganizationTokenClaims('1'));
+
+    // Assign a valid access token raw string
+    $accessToken = "eyJhbGciOiJSUzI1NiIsImtpZCI6IjEifQ.eyJpc3MiOiJodHRwczovL2xvZ3RvLmFwcCIsImF1ZCI6Imh0dHBzOi8vbG9ndG8uYXBwL2FwaSIsImV4cCI6OTk5OTk5OTk5OSwiaWF0IjoxNjE2NDQ2MzAwLCJzdWIiOiJ1c2VyMSIsInNjb3BlIjoiYWRtaW4gdXNlciIsImNsaWVudF9pZCI6InNhcXJlMW9xYmtwajZ6aHE4NWhvMCJ9.12345678901234567890123456789012345678901234567890";
+    $client->storage->set(
+      StorageKey::accessTokenMap,
+      '{"urn:logto:organization:1":{"token":"' . $accessToken . '","expiresAt": 9999999999}}',
+    );
+    $this->assertEquals(
+      $client->getOrganizationTokenClaims('1'),
       new AccessTokenClaims(
         iss: "https://logto.app",
         aud: "https://logto.app/api",

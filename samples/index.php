@@ -10,6 +10,7 @@
 
   use Logto\Sdk\LogtoClient;
   use Logto\Sdk\LogtoConfig;
+  use Logto\Sdk\Constants\UserScope;
 
   $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
   $dotenv->load();
@@ -17,11 +18,11 @@
   $resources = ['https://default.logto.app/api', 'https://shopping.api'];
   $client = new LogtoClient(
     new LogtoConfig(
-      endpoint: "http://localhost:3001",
+      endpoint: $_ENV['LOGTO_ENDPOINT'],
       appId: $_ENV['LOGTO_APP_ID'],
       appSecret: $_ENV['LOGTO_APP_SECRET'],
-      resources: $resources,
-      scopes: ['email'],
+      // resources: $resources, // Uncomment this line to specify resources
+      scopes: [UserScope::email, UserScope::organizations, UserScope::organizationRoles], // Update per your needs
     )
   );
 
@@ -29,17 +30,34 @@
     case '/':
     case null:
       if (!$client->isAuthenticated()) {
-        echo '<button onclick="location.href=\'/sign-in\'">Sign in</button>';
+        echo '<a href="/sign-in">Sign in</a>';
         break;
       }
 
-      echo '<button onclick="location.href=\'/sign-out\'">Sign out</button>';
-      echo '<br>';
-      var_dump($client->fetchUserInfo());
-      echo '<br>';
-      var_dump($client->getIdTokenClaims());
-      echo '<br>';
-      var_dump($client->getAccessTokenClaims($resources[0]));
+      echo '<a href="organizations">View organization token</a><br/>';
+      echo '<a href="sign-out">Sign out</a>';
+      echo '<h2>Userinfo</h2>';
+      echo '<pre>';
+      echo var_export($client->fetchUserInfo(), true);
+      echo '</pre>';
+      echo '<h2>ID token claims</h2>';
+      echo '<pre>';
+      echo var_export($client->getIdTokenClaims(), true);
+      echo '</pre><br>';
+      // var_dump($client->getAccessTokenClaims($resources[0])); // Uncomment this line to see the access token claims
+      break;
+    
+    case '/organizations':
+      if (!$client->isAuthenticated()) {
+        echo '<a href="/sign-in">Sign in</a>';
+        break;
+      }
+
+      echo '<a href="sign-out">Sign out</a>';
+      echo '<h2>Organization token claims</h2>';
+      echo '<pre>';
+      echo var_export($client->getOrganizationTokenClaims('1'), true); // Update the organization ID per your needs
+      echo '</pre>';
       break;
 
     case '/sign-in':

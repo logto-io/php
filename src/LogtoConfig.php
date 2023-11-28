@@ -1,6 +1,8 @@
 <?php declare(strict_types=1);
 namespace Logto\Sdk;
 
+use Logto\Sdk\Constants\UserScope;
+
 /**
  * The prompt parameter for the OpenID Connect authorization request.
  */
@@ -66,5 +68,15 @@ class LogtoConfig
      */
     public Prompt $prompt = Prompt::consent,
   ) {
+  }
+
+  /** 
+   * Check if the organization scope is requested by the configuration.
+   *
+   * @see UserScope::organizations
+   */
+  public function hasOrganizationScope(): bool
+  {
+    return in_array(UserScope::organizations, $this->scopes ?: []) || in_array(UserScope::organizations->value, $this->scopes ?: []);
   }
 }
