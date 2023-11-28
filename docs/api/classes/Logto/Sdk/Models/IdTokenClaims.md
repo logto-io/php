@@ -137,12 +137,42 @@ public ?bool $phone_number_verified
 
 ---
 
+### roles
+
+The user's roles.
+
+```php
+public ?array $roles
+```
+
+---
+
+### organizations
+
+The user's organization IDs.
+
+```php
+public ?array $organizations
+```
+
+---
+
+### organization_roles
+
+The user's organization roles.
+
+```php
+public ?array $organization_roles
+```
+
+---
+
 ## Methods
 
 ### \_\_construct
 
 ```php
-public __construct(string $iss, string $sub, string $aud, int $exp, int $iat, ?string $at_hash = null, ?string $name = null, ?string $username = null, ?string $picture = null, ?string $email = null, ?bool $email_verified = null, ?string $phone_number = null, ?bool $phone_number_verified = null, mixed $extra): mixed
+public __construct(string $iss, string $sub, string $aud, int $exp, int $iat, ?string $at_hash = null, ?string $name = null, ?string $username = null, ?string $picture = null, ?string $email = null, ?bool $email_verified = null, ?string $phone_number = null, ?bool $phone_number_verified = null, ?array $roles = null, ?array $organizations = null, ?array $organization_roles = null, mixed $extra): mixed
 ```
 
 **Parameters:**
@@ -162,6 +192,9 @@ public __construct(string $iss, string $sub, string $aud, int $exp, int $iat, ?s
 | `$email_verified`        | **?bool**   |             |
 | `$phone_number`          | **?string** |             |
 | `$phone_number_verified` | **?bool**   |             |
+| `$roles`                 | **?array**  |             |
+| `$organizations`         | **?array**  |             |
+| `$organization_roles`    | **?array**  |             |
 | `$extra`                 | **mixed**   |             |
 
 ---

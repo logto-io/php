@@ -89,6 +89,36 @@ public ?bool $phone_number_verified
 
 ---
 
+### roles
+
+The user's roles.
+
+```php
+public ?array $roles
+```
+
+---
+
+### organizations
+
+The user's organization IDs.
+
+```php
+public ?array $organizations
+```
+
+---
+
+### organization_roles
+
+The user's organization roles.
+
+```php
+public ?array $organization_roles
+```
+
+---
+
 ### custom_data
 
 The custom data of the user, can be any JSON object.
@@ -115,7 +145,7 @@ public ?array $identities
 ### \_\_construct
 
 ```php
-public __construct(string $sub, ?string $name = null, ?string $username = null, ?string $picture = null, ?string $email = null, ?bool $email_verified = null, ?string $phone_number = null, ?bool $phone_number_verified = null, mixed $custom_data = null, ?array $identities = null, mixed $extra): mixed
+public __construct(string $sub, ?string $name = null, ?string $username = null, ?string $picture = null, ?string $email = null, ?bool $email_verified = null, ?string $phone_number = null, ?bool $phone_number_verified = null, ?array $roles = null, ?array $organizations = null, ?array $organization_roles = null, mixed $custom_data = null, ?array $identities = null, mixed $extra): mixed
 ```
 
 **Parameters:**
@@ -130,6 +160,9 @@ public __construct(string $sub, ?string $name = null, ?string $username = null, 
 | `$email_verified`        | **?bool**   |             |
 | `$phone_number`          | **?string** |             |
 | `$phone_number_verified` | **?bool**   |             |
+| `$roles`                 | **?array**  |             |
+| `$organizations`         | **?array**  |             |
+| `$organization_roles`    | **?array**  |             |
 | `$custom_data`           | **mixed**   |             |
 | `$identities`            | **?array**  |             |
 | `$extra`                 | **mixed**   |             |

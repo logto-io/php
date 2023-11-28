@@ -10,9 +10,10 @@ instance methods.
 
 ## Constants
 
-| Constant         | Visibility | Type | Value                                                                 |
-| :--------------- | :--------- | :--- | :-------------------------------------------------------------------- |
-| `DEFAULT_SCOPES` | public     |      | [&#039;openid&#039;, &#039;offline_access&#039;, &#039;profile&#039;] |
+| Constant                  | Visibility | Type | Value                                                                                                                                    |
+| :------------------------ | :--------- | :--- | :--------------------------------------------------------------------------------------------------------------------------------------- |
+| `DEFAULT_SCOPES`          | public     |      | [\Logto\Sdk\Constants\ReservedScope::openId, \Logto\Sdk\Constants\ReservedScope::offlineAccess, \Logto\Sdk\Constants\UserScope::profile] |
+| `ORGANIZATION_URN_PREFIX` | public     |      | &#039;urn:logto:organization:&#039;                                                                                                      |
 
 ## Properties
 
@@ -109,6 +110,31 @@ See [Client Creates the Code Challenge](https://www.rfc-editor.org/rfc/rfc7636.h
 
 ---
 
+### buildOrganizationUrn
+
+Build the organization URN for the given organization ID.
+
+```php
+public static buildOrganizationUrn(string $organizationId): string
+```
+
+For example, if the organization ID is `123`, the organization URN will be
+`urn:logto:organization:123`.
+
+- This method is **static**.
+
+**Parameters:**
+
+| Parameter         | Type       | Description |
+| ----------------- | ---------- | ----------- |
+| `$organizationId` | **string** |             |
+
+**See Also:**
+
+- - [RFC 0001](https://github.com/logto-io/rfcs) to learn more.
+
+---
+
 ### \_\_construct
 
 Initialize the OIDC core with the provider metadata. You can use the
@@ -176,6 +202,9 @@ Fetch the token for the given resource from the token endpoint using the refresh
 ```php
 public fetchTokenByRefreshToken(string $clientId, ?string $clientSecret, string $refreshToken, string $resource = &#039;&#039;): \Logto\Sdk\Oidc\TokenResponse
 ```
+
+If the resource is an organization URN, the organization ID will be extracted from
+the URN and the `organization_id` parameter will be sent to the token endpoint.
 
 **Parameters:**
 

@@ -1,3 +1,5 @@
+---
+
 # Logto PHP SDK
 
 This is an automatically generated documentation for **Logto PHP SDK**.

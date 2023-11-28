@@ -56,7 +56,7 @@
       echo '<a href="sign-out">Sign out</a>';
       echo '<h2>Organization token claims</h2>';
       echo '<pre>';
-      echo var_export($client->getOrganizationTokenClaims('1'), true); // Update the organization ID per your needs
+      echo var_export($client->getOrganizationTokenClaims('<organization-id>'), true); // Replace <organization-id> with a valid organization ID
       echo '</pre>';
       break;
 

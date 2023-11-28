@@ -100,6 +100,24 @@ public getAccessToken(string $resource = &#039;&#039;): ?string
 
 ---
 
+### getOrganizationToken
+
+Get the access token for the given organization ID. If the access token is
+expired, it will be refreshed automatically. If no refresh token is found,
+null will be returned.
+
+```php
+public getOrganizationToken(string $organizationId): ?string
+```
+
+**Parameters:**
+
+| Parameter         | Type       | Description |
+| ----------------- | ---------- | ----------- |
+| `$organizationId` | **string** |             |
+
+---
+
 ### getAccessTokenClaims
 
 Get the claims in the access token for the given resource. If the access token
@@ -115,6 +133,24 @@ public getAccessTokenClaims(string $resource = &#039;&#039;): \Logto\Sdk\Models\
 | Parameter   | Type       | Description |
 | ----------- | ---------- | ----------- |
 | `$resource` | **string** |             |
+
+---
+
+### getOrganizationTokenClaims
+
+Get the claims in the access token for the given organization ID. If the access
+token is expired, it will be refreshed automatically. If it's unable to refresh
+the access token, an exception will be thrown.
+
+```php
+public getOrganizationTokenClaims(string $organizationId): \Logto\Sdk\Models\AccessTokenClaims
+```
+
+**Parameters:**
+
+| Parameter         | Type       | Description |
+| ----------------- | ---------- | ----------- |
+| `$organizationId` | **string** |             |
 
 ---
 
