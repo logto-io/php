@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 namespace Logto\Sdk;
 
+use Logto\Sdk\Constants\ReservedResource;
 use Logto\Sdk\Models\AccessTokenClaims;
 use Logto\Sdk\Models\IdTokenClaims;
 use Logto\Sdk\Oidc\OidcCore;
@@ -123,6 +124,16 @@ class LogtoClient
   }
 
   /**
+   * Get the access token for the given organization ID. If the access token is
+   * expired, it will be refreshed automatically. If no refresh token is found,
+   * null will be returned.
+   */
+  function getOrganizationToken(string $organizationId): ?string
+  {
+    return $this->getAccessToken(OidcCore::buildOrganizationUrn($organizationId));
+  }
+
+  /**
    * Get the claims in the access token for the given resource. If the access token
    * is expired, it will be refreshed automatically. If it's unable to refresh the
    * access token, an exception will be thrown.
@@ -130,6 +141,16 @@ class LogtoClient
   function getAccessTokenClaims(string $resource = ''): AccessTokenClaims
   {
     return new AccessTokenClaims(...json_decode(base64_decode(explode('.', $this->getAccessToken($resource))[1]), true));
+  }
+
+  /**
+   * Get the claims in the access token for the given organization ID. If the access
+   * token is expired, it will be refreshed automatically. If it's unable to refresh
+   * the access token, an exception will be thrown.
+   */
+  function getOrganizationTokenClaims(string $organizationId): AccessTokenClaims
+  {
+    return $this->getAccessTokenClaims(OidcCore::buildOrganizationUrn($organizationId));
   }
 
   /**
@@ -274,12 +295,24 @@ class LogtoClient
 
   protected function buildSignInUrl(string $redirectUri, string $codeChallenge, string $state, ?InteractionMode $interactionMode): string
   {
+    $pickValue = function (string|\BackedEnum $value): string {
+      return $value instanceof \BackedEnum ? $value->value : $value;
+    };
     $config = $this->config;
+    $scopes = array_unique(
+      array_map($pickValue, array_merge($config->scopes ?: [], $this->oidcCore::DEFAULT_SCOPES))
+    );
+    $resources = array_unique(
+      $config->hasOrganizationScope()
+      ? array_merge($config->resources ?: [], [ReservedResource::organizations->value])
+      : ($config->resources ?: [])
+    );
+
     $query = http_build_query([
       'client_id' => $config->appId,
       'redirect_uri' => $redirectUri,
       'response_type' => 'code',
-      'scope' => implode(' ', array_merge($config->scopes ?: [], $this->oidcCore::DEFAULT_SCOPES)),
+      'scope' => implode(' ', $scopes),
       'prompt' => $config->prompt->value,
       'code_challenge' => $codeChallenge,
       'code_challenge_method' => 'S256',
@@ -291,9 +324,9 @@ class LogtoClient
       '?' .
       $query .
       (
-        $config->resources ?
+        count($resources) > 0 ?
         # Resources need to use the same key name as the query string
-        '&' . implode('&', array_map(fn($resource) => "resource=" . urlencode($resource), $config->resources)) :
+        '&' . implode('&', array_map(fn($resource) => "resource=" . urlencode($resource), $resources)) :
         ''
       );
   }

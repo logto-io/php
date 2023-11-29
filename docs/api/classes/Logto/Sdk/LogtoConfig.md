@@ -109,6 +109,20 @@ public __construct(string $endpoint, string $appId, ?string $appSecret = null, ?
 
 ---
 
+### hasOrganizationScope
+
+Check if the organization scope is requested by the configuration.
+
+```php
+public hasOrganizationScope(): bool
+```
+
+**See Also:**
+
+- \Logto\Sdk\Constants\UserScope::organizations -
+
+---
+
 ---
 
 > Automatically generated from source code comments using [phpDocumentor](http://www.phpdoc.org/) and [saggre/phpdocumentor-markdown](https://github.com/Saggre/phpDocumentor-markdown)

@@ -23,6 +23,12 @@ class UserInfoResponse extends JsonModel
     public ?string $phone_number = null,
     /** Whether the phone number is verified. */
     public ?bool $phone_number_verified = null,
+    /** The user's roles. */
+    public ?array $roles = null,
+    /** The user's organization IDs. */
+    public ?array $organizations = null,
+    /** The user's organization roles. */
+    public ?array $organization_roles = null,
     /** The custom data of the user, can be any JSON object. */
     public mixed $custom_data = null,
     /**
