@@ -61,16 +61,16 @@
       break;
 
     case '/sign-in':
-      header('Location: ' . $client->signIn("http://localhost:5000/callback"));
+      header('Location: ' . $client->signIn("http://localhost:8080/sign-in-callback"));
       exit();
 
-    case '/callback':
+    case '/sign-in-callback':
       $client->handleSignInCallback();
       header('Location: /');
       exit();
 
     case '/sign-out':
-      $to = $client->signOut('http://localhost:5000/');
+      $to = $client->signOut('http://localhost:8080');
       header("Location: $to");
       exit();
 
