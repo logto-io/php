@@ -248,7 +248,7 @@ class LogtoClient
     // Some loose checks
     if (
       parse_url($signInSession->redirectUri, PHP_URL_HOST) !== ($_SERVER['SERVER_NAME'] ?? null) ||
-      parse_url($signInSession->redirectUri, PHP_URL_PATH) !== ($_SERVER['PATH_INFO'] ?? null)
+      parse_url($signInSession->redirectUri, PHP_URL_PATH) !== parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)
     ) {
       throw new LogtoException('The redirect URI in the sign-in session does not match the current request.');
     }
