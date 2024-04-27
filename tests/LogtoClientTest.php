@@ -152,7 +152,7 @@ final class LogtoClientTest extends TestCase
   function test_handleSignInCallback_pathDoesNotMatch()
   {
     $_SERVER['SERVER_NAME'] = 'localhost';
-    $_SERVER['PATH_INFO'] = '/foo';
+    $_SERVER['REQUEST_URI'] = '/foo';
     $client = $this->getInstance();
     $client->storage->set(
       StorageKey::signInSession,
@@ -166,7 +166,7 @@ final class LogtoClientTest extends TestCase
   function test_handleSignInCallback_stateDoesNotMatch()
   {
     $_SERVER['SERVER_NAME'] = 'redirect_uri';
-    $_SERVER['PATH_INFO'] = '/some_path';
+    $_SERVER['REQUEST_URI'] = '/some_path';
     $_SERVER['QUERY_STRING'] = null;
     $client = $this->getInstance();
     $client->storage->set(
@@ -181,7 +181,7 @@ final class LogtoClientTest extends TestCase
   function test_handleSignInCallback_codeNotFound()
   {
     $_SERVER['SERVER_NAME'] = 'redirect_uri';
-    $_SERVER['PATH_INFO'] = '/some_path';
+    $_SERVER['REQUEST_URI'] = '/some_path';
     $_SERVER['QUERY_STRING'] = 'state=state';
     $client = $this->getInstance();
     $client->storage->set(
@@ -196,7 +196,7 @@ final class LogtoClientTest extends TestCase
   function test_handleSignInCallback()
   {
     $_SERVER['SERVER_NAME'] = 'redirect_uri';
-    $_SERVER['PATH_INFO'] = '/some_path';
+    $_SERVER['REQUEST_URI'] = '/some_path';
     $_SERVER['QUERY_STRING'] = 'state=state&code=code';
     $tokenResponse = new TokenResponse(
       access_token: 'access_token',
