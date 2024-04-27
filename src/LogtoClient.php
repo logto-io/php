@@ -64,7 +64,7 @@ class LogtoClient
 
   function __construct(public LogtoConfig $config, public Storage $storage = new SessionStorage())
   {
-    $this->oidcCore = OidcCore::create($config->endpoint);
+    $this->oidcCore = OidcCore::create(rtrim($config->endpoint, "/"));
   }
 
   /**
