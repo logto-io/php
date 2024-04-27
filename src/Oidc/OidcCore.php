@@ -10,6 +10,7 @@ use Logto\Sdk\Constants\UserScope;
 use Logto\Sdk\Models\OidcProviderMetadata;
 use Phpfastcache\CacheManager;
 use Firebase\JWT\JWT;
+use Phpfastcache\Helper\Psr16Adapter;
 
 /**
  * The core OIDC functions for the Logto client. Provider-agonistic functions
@@ -23,18 +24,29 @@ class OidcCore
 
   /**
    * Create a OidcCore instance for the given Logto endpoint using the discovery URL.
-   * Note it may take a few time to fetch the provider metadata since it will send a
-   * network request.
+   * 
+   * Note it may take a while to fetch the metadata from the endpoint for the first time.
+   * After that, the metadata will be cached for 1 hour.
    */
   static function create(string $logtoEndpoint): OidcCore
   {
+    $defaultDriver = 'Files';
+    $Psr16Adapter = new Psr16Adapter($defaultDriver);
     $client = new Client();
+    $cacheKey = 'logto_oidc_metadata.' . urlencode($logtoEndpoint);
+
+    if ($metadata = $Psr16Adapter->get($cacheKey)) {
+      return new OidcCore(new OidcProviderMetadata(...$metadata));
+    }
+
     $body = $client->get(
       $logtoEndpoint . '/oidc/.well-known/openid-configuration',
       ['headers' => ['user-agent' => '@logto/php', 'accept' => '*/*']]
     )->getBody()->getContents();
+    $metadata = json_decode($body, true);
+    $Psr16Adapter->set($cacheKey, $metadata, 3600);
 
-    return new OidcCore(new OidcProviderMetadata(...json_decode($body, true)));
+    return new OidcCore(new OidcProviderMetadata(...$metadata));
   }
 
   /** Generate a random string (32 bytes) for the state parameter. */

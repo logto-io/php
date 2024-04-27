@@ -26,7 +26,7 @@
     )
   );
 
-  switch ($_SERVER['PATH_INFO']) {
+  switch (parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)) {
     case '/':
     case null:
       if (!$client->isAuthenticated()) {
