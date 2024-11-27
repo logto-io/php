@@ -10,6 +10,9 @@ use Logto\Sdk\Oidc\UserInfoResponse;
 use Logto\Sdk\Storage\SessionStorage;
 use Logto\Sdk\Storage\Storage;
 use Logto\Sdk\Storage\StorageKey;
+use Logto\Sdk\Models\DirectSignInOptions;
+use Logto\Sdk\Constants\FirstScreen;
+use Logto\Sdk\Constants\AuthenticationIdentifier;
 
 /**
  * The sign-in session that stores the information for the sign-in callback.
@@ -165,21 +168,71 @@ class LogtoClient
    * Returns the sign-in URL for the given redirect URI. You should redirect the user
    * to the returned URL to sign in.
    *
-   * By specifying the interaction mode, you can control whether the user will be
-   * prompted for sign-in or sign-up on the first screen. If the interaction mode is
-   * not specified, the default one will be used.
-   *
-   * @example
+   * @param string $redirectUri The URI to redirect to after sign-in
+   * @param ?InteractionMode $interactionMode Controls whether to show sign-in or sign-up UI first
+   * @param ?DirectSignInOptions $directSignIn Direct sign-in configuration for social or SSO, see details at https://docs.logto.io/docs/references/openid-connect/authentication-parameters/#direct-sign-in
+   * @param ?FirstScreen $firstScreen Controls which screen to show first (sign-in or register), see details at https://docs.logto.io/docs/references/openid-connect/authentication-parameters/#first-screen
+   * @param ?array $identifiers Array of authentication identifiers (email, phone, username) to enable, this parameter MUST work with `firstScreen` parameter
+   * @param ?array $extraParams Additional query parameters to include in the sign-in URL
+   * 
+   * @example Basic sign-in
    * ```php
    * header('Location: ' . $client->signIn("https://example.com/callback"));
    * ```
+   * 
+   * @example Sign-in with social provider
+   * ```php
+   * $directSignIn = new DirectSignInOptions(
+   *   method: DirectSignInMethod::social,
+   *   target: 'github'
+   * );
+   * header('Location: ' . $client->signIn(
+   *   "https://example.com/callback",
+   *   directSignIn: $directSignIn
+   * ));
+   * ```
+   * 
+   * @example Sign-in with specific identifiers
+   * ```php
+   * header('Location: ' . $client->signIn(
+   *   "https://example.com/callback",
+   *   firstScreen: FirstScreen::signIn,
+   *   identifiers: [AuthenticationIdentifier::email, AuthenticationIdentifier::username]
+   * ));
+   * ```
+   * 
+   * @example Sign-in with additional parameters
+   * ```php
+   * header('Location: ' . $client->signIn(
+   *   "https://example.com/callback",
+   *   extraParams: [
+   *     'foo' => 'bar',
+   *     'baz' => 'qux'
+   *   ]
+   * ));
+   * ```
    */
-  function signIn(string $redirectUri, ?InteractionMode $interactionMode = null): string
-  {
+  function signIn(
+    string $redirectUri,
+    ?InteractionMode $interactionMode = null,
+    ?DirectSignInOptions $directSignIn = null,
+    ?FirstScreen $firstScreen = null,
+    ?array $identifiers = null,
+    ?array $extraParams = null
+  ): string {
     $codeVerifier = $this->oidcCore::generateCodeVerifier();
     $codeChallenge = $this->oidcCore::generateCodeChallenge($codeVerifier);
     $state = $this->oidcCore::generateState();
-    $signInUrl = $this->buildSignInUrl($redirectUri, $codeChallenge, $state, $interactionMode);
+    $signInUrl = $this->buildSignInUrl(
+      $redirectUri, 
+      $codeChallenge, 
+      $state, 
+      $interactionMode,
+      $directSignIn,
+      $firstScreen,
+      $identifiers,
+      $extraParams
+    );
 
     foreach (StorageKey::cases() as $key) {
       $this->storage->delete($key);
@@ -293,11 +346,20 @@ class LogtoClient
     return $this->oidcCore->fetchUserInfo($accessToken);
   }
 
-  protected function buildSignInUrl(string $redirectUri, string $codeChallenge, string $state, ?InteractionMode $interactionMode): string
-  {
+  protected function buildSignInUrl(
+    string $redirectUri, 
+    string $codeChallenge, 
+    string $state, 
+    ?InteractionMode $interactionMode,
+    ?DirectSignInOptions $directSignIn = null,
+    ?FirstScreen $firstScreen = null,
+    ?array $identifiers = null,
+    ?array $extraParams = null
+  ): string {
     $pickValue = function (string|\BackedEnum $value): string {
       return $value instanceof \BackedEnum ? $value->value : $value;
     };
+    
     $config = $this->config;
     $scopes = array_unique(
       array_map($pickValue, array_merge($config->scopes ?: [], $this->oidcCore::DEFAULT_SCOPES))
@@ -308,7 +370,8 @@ class LogtoClient
       : ($config->resources ?: [])
     );
 
-    $query = http_build_query([
+    // Build the base query parameters
+    $queryParams = [
       'client_id' => $config->appId,
       'redirect_uri' => $redirectUri,
       'response_type' => 'code',
@@ -317,18 +380,44 @@ class LogtoClient
       'code_challenge' => $codeChallenge,
       'code_challenge_method' => 'S256',
       'state' => $state,
-      'interaction_mode' => $interactionMode?->value,
-    ]);
+    ];
 
-    return $this->oidcCore->metadata->authorization_endpoint .
-      '?' .
-      $query .
-      (
-        count($resources) > 0 ?
-        # Resources need to use the same key name as the query string
-        '&' . implode('&', array_map(fn($resource) => "resource=" . urlencode($resource), $resources)) :
-        ''
-      );
+    // Add optional parameters
+    if ($interactionMode !== null) {
+      $queryParams['interaction_mode'] = $interactionMode->value;
+    }
+
+    if ($firstScreen !== null) {
+      $queryParams['first_screen'] = $firstScreen->value;
+    }
+
+    // Handle the `identifiers` array parameter
+    if ($identifiers !== null && count($identifiers) > 0) {
+      $queryParams['identifier'] = implode(' ', array_map($pickValue, $identifiers));
+    }
+
+    // Handle the `direct_sign_in` parameter
+    if ($directSignIn !== null) {
+      $queryParams['direct_sign_in'] = $directSignIn->method->value . ':' . $directSignIn->target;
+    }
+
+    // Merge the extra query parameters
+    if ($extraParams !== null) {
+      $queryParams = array_merge($queryParams, $extraParams);
+    }
+
+    // Build the base URL
+    $url = $this->oidcCore->metadata->authorization_endpoint . '?' . http_build_query($queryParams);
+
+    // Add the `resource` parameters
+    if (count($resources) > 0) {
+      $url .= '&' . implode('&', array_map(
+        fn($resource) => "resource=" . urlencode($resource), 
+        $resources
+      ));
+    }
+
+    return $url;
   }
 
   protected function setSignInSession(SignInSession $data): void

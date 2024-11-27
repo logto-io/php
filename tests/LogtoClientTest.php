@@ -19,6 +19,10 @@ use Logto\Sdk\Models\AccessTokenClaims;
 use Logto\Sdk\Models\IdTokenClaims;
 use Logto\Sdk\Oidc\UserInfoResponse;
 use Logto\Sdk\Constants\UserScope;
+use Logto\Sdk\Models\DirectSignInOptions;
+use Logto\Sdk\Constants\DirectSignInMethod;
+use Logto\Sdk\Constants\FirstScreen;
+use Logto\Sdk\Constants\AuthenticationIdentifier;
 
 class MemoryStorage implements Storage
 {
@@ -393,6 +397,115 @@ final class LogtoClientTest extends TestCase
         username: "john",
         email: "john@wick.com"
       )
+    );
+  }
+
+  function test_signIn_withDirectSignIn_social()
+  {
+    $client = $this->getInstance();
+    $directSignIn = new DirectSignInOptions(
+      method: DirectSignInMethod::social,
+      target: 'github'
+    );
+    
+    $this->assertSame(
+      $client->signIn(
+        "redirectUri",
+        directSignIn: $directSignIn
+      ),
+      "https://logto.app/oidc/auth?client_id=app-id&redirect_uri=redirectUri&response_type=code&scope=openid+offline_access+profile&prompt=consent&code_challenge=codeChallenge&code_challenge_method=S256&state=state&direct_sign_in=social%3Agithub"
+    );
+  }
+
+  function test_signIn_withDirectSignIn_sso()
+  {
+    $client = $this->getInstance();
+    $directSignIn = new DirectSignInOptions(
+      method: DirectSignInMethod::sso,
+      target: 'okta'
+    );
+    
+    $this->assertSame(
+      $client->signIn(
+        "redirectUri",
+        directSignIn: $directSignIn
+      ),
+      "https://logto.app/oidc/auth?client_id=app-id&redirect_uri=redirectUri&response_type=code&scope=openid+offline_access+profile&prompt=consent&code_challenge=codeChallenge&code_challenge_method=S256&state=state&direct_sign_in=sso%3Aokta"
+    );
+  }
+
+  function test_signIn_withFirstScreenAndIdentifiers()
+  {
+    $client = $this->getInstance();
+    
+    $firstScreens = [
+      FirstScreen::signIn,
+      FirstScreen::register,
+    ];
+
+    $identifierCombinations = [
+      [AuthenticationIdentifier::email],
+      [AuthenticationIdentifier::phone],
+      [AuthenticationIdentifier::username],
+      [AuthenticationIdentifier::email, AuthenticationIdentifier::phone],
+      [AuthenticationIdentifier::email, AuthenticationIdentifier::username],
+      [AuthenticationIdentifier::phone, AuthenticationIdentifier::username],
+      [AuthenticationIdentifier::email, AuthenticationIdentifier::phone, AuthenticationIdentifier::username],
+    ];
+
+    foreach ($firstScreens as $firstScreen) {
+      foreach ($identifierCombinations as $identifiers) {
+        $expectedIdentifiers = implode(' ', array_map(fn($id) => $id->value, $identifiers));
+        
+        $this->assertSame(
+          $client->signIn(
+            "redirectUri",
+            firstScreen: $firstScreen,
+            identifiers: $identifiers
+          ),
+          "https://logto.app/oidc/auth?" . http_build_query([
+            'client_id' => 'app-id',
+            'redirect_uri' => 'redirectUri',
+            'response_type' => 'code',
+            'scope' => 'openid offline_access profile',
+            'prompt' => 'consent',
+            'code_challenge' => 'codeChallenge',
+            'code_challenge_method' => 'S256',
+            'state' => 'state',
+            'first_screen' => $firstScreen->value,
+            'identifier' => $expectedIdentifiers,
+          ])
+        );
+      }
+    }
+  }
+
+  function test_signIn_withExtraParams()
+  {
+    $client = $this->getInstance();
+    
+    $this->assertSame(
+      $client->signIn(
+        "redirectUri",
+        extraParams: ['foo' => 'bar', 'baz' => 'qux']
+      ),
+      "https://logto.app/oidc/auth?client_id=app-id&redirect_uri=redirectUri&response_type=code&scope=openid+offline_access+profile&prompt=consent&code_challenge=codeChallenge&code_challenge_method=S256&state=state&foo=bar&baz=qux"
+    );
+  }
+
+  function test_signIn_withAllNewParams()
+  {
+    $client = $this->getInstance();
+    
+    $this->assertSame(
+      $client->signIn(
+        "redirectUri",
+        interactionMode: InteractionMode::signIn,
+        firstScreen: FirstScreen::signIn,
+        identifiers: [AuthenticationIdentifier::email, AuthenticationIdentifier::phone],
+        extraParams: ['foo' => 'bar', 'baz' => 'qux']
+      ),
+      "https://logto.app/oidc/auth?client_id=app-id&redirect_uri=redirectUri&response_type=code&scope=openid+offline_access+profile&prompt=consent&code_challenge=codeChallenge&code_challenge_method=S256&state=state&interaction_mode=signIn&first_screen=identifier%3Asign_in&identifier=email+phone&foo=bar&baz=qux"
     );
   }
 

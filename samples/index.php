@@ -11,9 +11,24 @@
   use Logto\Sdk\LogtoClient;
   use Logto\Sdk\LogtoConfig;
   use Logto\Sdk\Constants\UserScope;
+  use Logto\Sdk\InteractionMode;
+  use Logto\Sdk\Models\DirectSignInOptions;
+  use Logto\Sdk\Constants\DirectSignInMethod;
+  use Logto\Sdk\Constants\FirstScreen;
+  use Logto\Sdk\Constants\AuthenticationIdentifier;
+  use Logto\Sdk\Oidc\OidcCore;
 
   $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
   $dotenv->load();
+
+  // Set the SSL verification options for PHP before creating the LogtoClient
+  $contextOptions = [
+    'ssl' => [
+      'verify_peer' => false,
+      'verify_peer_name' => false,
+    ],
+  ];
+  stream_context_set_default($contextOptions);
 
   $resources = ['https://default.logto.app/api', 'https://shopping.api'];
   $client = new LogtoClient(
@@ -30,7 +45,14 @@
     case '/':
     case null:
       if (!$client->isAuthenticated()) {
-        echo '<a href="/sign-in">Sign in</a>';
+        // show different sign in options
+        echo '<h3>Sign In Options:</h3>';
+        echo '<ul>';
+        echo '<li><a href="/sign-in">Normal Sign In</a></li>';
+        echo '<li><a href="/sign-in/sign-up">Sign In (Sign Up First)</a></li>';
+        echo '<li><a href="/sign-in/social">Sign In with GitHub</a></li>';
+        echo '<li><a href="/sign-in/email-and-username">Sign In with Email and Username</a></li>';
+        echo '</ul>';
         break;
       }
 
@@ -62,6 +84,31 @@
 
     case '/sign-in':
       header('Location: ' . $client->signIn("http://localhost:8080/sign-in-callback"));
+      exit();
+
+    case '/sign-in/sign-up':
+      header('Location: ' . $client->signIn(
+        "http://localhost:8080/sign-in-callback",
+        interactionMode: InteractionMode::signUp
+      ));
+      exit();
+
+    case '/sign-in/social':
+      header('Location: ' . $client->signIn(
+        "http://localhost:8080/sign-in-callback",
+        directSignIn: new DirectSignInOptions(
+          method: DirectSignInMethod::social,
+          target: 'github'
+        )
+      ));
+      exit();
+
+    case '/sign-in/email-and-username':
+      header('Location: ' . $client->signIn(
+        "http://localhost:8080/sign-in-callback",
+        firstScreen: FirstScreen::signIn,
+        identifiers: [AuthenticationIdentifier::email, AuthenticationIdentifier::username]
+      ));
       exit();
 
     case '/sign-in-callback':
