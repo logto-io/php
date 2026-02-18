@@ -21,7 +21,7 @@
     ],
     "require": {
         "php": ">=8.1",
-        "firebase/php-jwt": "^6.8",
+        "firebase/php-jwt": "^6.8 || ^7.0",
         "guzzlehttp/guzzle": "^7.7",
         "phpfastcache/phpfastcache": "^9.1",
         "vlucas/phpdotenv": "^5.5"
