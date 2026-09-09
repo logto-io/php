@@ -28,6 +28,6 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^10",
-        "saggre/phpdocumentor-markdown": "^0.1.3"
+        "saggre/phpdocumentor-markdown": "^1.0.0"
     }
 }
