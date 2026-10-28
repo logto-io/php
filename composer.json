@@ -22,7 +22,7 @@
     "require": {
         "php": ">=8.1",
         "firebase/php-jwt": "^7.0",
-        "guzzlehttp/guzzle": "^7.7",
+        "guzzlehttp/guzzle": "^8.0",
         "phpfastcache/phpfastcache": "^9.1",
         "vlucas/phpdotenv": "^5.5"
     },
