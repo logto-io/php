@@ -93,7 +93,23 @@ class LogtoClient
    */
   function getIdTokenClaims(): IdTokenClaims
   {
-    return new IdTokenClaims(...json_decode(base64_decode(explode('.', $this->getIdToken())[1]), true));
+        $playload = explode('.', $this->getIdToken())[1] ?? null;
+        if (empty($playload)) throw new \Exception("Invalid Playload data");
+
+        // 解决编码标准不一致的问题： (RFC 4648 §5) 与标准 Base64 (RFC 4648 §4)
+
+        // 1. 替换字符 (- -> +, _ -> /)
+        $data = strtr($playload, '-_', '+/');
+
+        // 2. 补全填充 (=)
+        $mod = strlen($data) % 4;
+        if ($mod > 0) {
+            $data .= str_repeat('=', 4 - $mod);
+        }
+
+        $playloadDecode = base64_decode($data, true);
+
+        return new IdTokenClaims(...json_decode($playloadDecode, true));
   }
 
   /**
